@@ -2,40 +2,10 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 const Statistics = ({ text, value} ) => {
-  // const all = good + neutral + bad;
-  // if (all === 0) {
-  //   return (
-  //     <div>
-  //       <div>
-  //         No feedback given
-  //       </div>
-  //     </div>
-  //   )
-  // }
   return (
     <div>
       {text} {value}
     </div>
-    // <div>
-    //   <div>
-    //     good {good}
-    //   </div>
-    //   <div>
-    //     neutral {neutral}
-    //   </div>
-    //   <div>
-    //     bad {bad}
-    //   </div>
-    //   <div>
-    //     all {all}
-    //   </div>
-    //   <div>
-    //     average {all > 0 ? ((good * 1) + (bad * -1)) / all : '0'}
-    //   </div>
-    //   <div>
-    //     positive {all > 0 ? (good * 100) / all : '0'}%
-    //   </div>
-    // </div>
   )
 }
 
@@ -56,12 +26,40 @@ const App = () => {
   if (all > 0) {
     statistics = (
       <div>
-        <Statistics text="good" value={good}/>
-        <Statistics text="neutral" value={neutral}/>
-        <Statistics text="bad" value={bad}/>
-        <Statistics text="all" value={all}/>
-        <Statistics text="average" value={all > 0 ? ((good * 1) + (bad * -1)) / all : '0'}/>
-        <Statistics text="positive" value={(all > 0 ? (good * 100) / all : '0') + '%'}/> 
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <Statistics text="good" value={good}/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <Statistics text="neutral" value={neutral}/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <Statistics text="bad" value={bad}/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <Statistics text="all" value={all}/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <Statistics text="average" value={all > 0 ? ((good * 1) + (bad * -1)) / all : '0'}/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <Statistics text="positive" value={(all > 0 ? (good * 100) / all : '0') + '%'}/> 
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     );
   }
