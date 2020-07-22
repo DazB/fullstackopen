@@ -10,11 +10,16 @@ const Header = (props) => {
 }
 
 const Content = ({ parts }) => {
+  let total = 0;
   return (
     <div>
-      {parts.map(part =>
-        <Part key={part.id} name={part.name} exercises={part.exercises} />
-      )}
+      {parts.map(part => {
+        total += part.exercises;
+        return <Part key={part.id} name={part.name} exercises={part.exercises} />
+      })}
+      <b>
+        total of {total} exercises
+      </b>
     </div>
   )
 }
@@ -24,14 +29,6 @@ const Part = ({ name, exercises }) => {
     <p>
       {name} {exercises}
     </p>
-  )
-}
-
-const Total = (props) => {
-  return (
-      <p>
-        Number of exercises {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises}
-      </p>
   )
 }
 
@@ -49,7 +46,7 @@ const App = () => {
     parts: [
       {
         name: 'Fundamentals of React',
-        exercises: 10,
+        exercises: 100,
         id: 1
       },
       {
