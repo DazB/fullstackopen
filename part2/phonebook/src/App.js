@@ -92,6 +92,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
+      
       <Persons persons={persons} filter={filter} />
     </div>
   )
