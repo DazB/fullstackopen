@@ -1,9 +1,6 @@
 import React from 'react'
 
-const Countries = ({ countries, filter }) => {
-  const filteredCountries = countries.filter(country => 
-    country.name.toLowerCase().includes(filter.toLowerCase())
-  )
+const Countries = ({ filteredCountries, setFilteredCountries }) => {
   
   // Too many countries
   if (filteredCountries.length > 10) {
@@ -47,19 +44,22 @@ const Countries = ({ countries, filter }) => {
             </li>
           ))}
         </ul>
-        <img src={country.flag} alt={"Flag of " + country.name} height="100"/>
+        <img src={country.flag} alt={"Flag of " + country.name} height="100" />
       </div>
     )
   }
-
   // List matched countries 
   return (
     <div>
-      {filteredCountries.map(country => (
+      {filteredCountries.map(country => {
+        console.log(country)
+        return (
         <div key={country.name}>
           {country.name}
+          <button onClick={() => setFilteredCountries([country])}>show</button>
         </div>
-      ))}
+        )
+    })}
     </div>
   )
 }

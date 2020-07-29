@@ -6,6 +6,7 @@ import axios from 'axios'
 const App = () => {
   const [filter, setNewFilter] = useState('');
   const [countries, setCountries] = useState([]);
+  const [filteredCountries, setFilteredCountries] = useState([]);
 
   // Effect hook. Executed once when the component is rendered
   // Gets all countries
@@ -13,19 +14,24 @@ const App = () => {
     axios
       .get("https://restcountries.eu/rest/v2/all")
       .then(response => {
-        setCountries(response.data)
+        setCountries(response.data);
+        setFilteredCountries(response.data);
       })
   }, [])
 
   const handleFilterChange = (event) => {
     setNewFilter(event.target.value);
+    setFilteredCountries(countries.filter(country => 
+      country.name.toLowerCase().includes(filter.toLowerCase())
+    ))
   }
 
 
   return (
     <div>
       <Filter handleFilterChange={handleFilterChange} filter={filter} />
-      <Countries countries={countries} filter={filter} />
+      <Countries filteredCountries={filteredCountries} 
+        setFilteredCountries={setFilteredCountries} />
     </div>
   )
 }
