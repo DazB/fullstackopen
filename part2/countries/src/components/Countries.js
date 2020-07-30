@@ -1,4 +1,5 @@
 import React from 'react'
+import Country from './Country'
 
 const Countries = ({ filteredCountries, setFilteredCountries }) => {
   
@@ -22,37 +23,17 @@ const Countries = ({ filteredCountries, setFilteredCountries }) => {
 
   // One country
   if (filteredCountries.length === 1) {
-    const country = filteredCountries[0];
     return (
       <div>
-        <h1>
-          {country.name}
-        </h1>
-        <div>
-          captial {country.capital}
-        </div>
-        <div>
-          population {country.population}
-        </div>
-        <h2>
-          languages
-        </h2>
-        <ul>
-          {country.languages.map(language => (
-            <li key={language.name}>
-              {language.name}
-            </li>
-          ))}
-        </ul>
-        <img src={country.flag} alt={"Flag of " + country.name} height="100" />
+        <Country country={filteredCountries[0]} />
       </div>
     )
   }
+  
   // List matched countries 
   return (
     <div>
       {filteredCountries.map(country => {
-        console.log(country)
         return (
         <div key={country.name}>
           {country.name}

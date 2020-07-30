@@ -22,10 +22,9 @@ const App = () => {
   const handleFilterChange = (event) => {
     setNewFilter(event.target.value);
     setFilteredCountries(countries.filter(country => 
-      country.name.toLowerCase().includes(filter.toLowerCase())
+      country.name.toLowerCase().includes(event.target.value.toLowerCase())
     ))
   }
-
 
   return (
     <div>
