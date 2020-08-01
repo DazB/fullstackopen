@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import Filter from './components/Filter'
+import NameFilter from './components/NameFilter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-  const [filter, setFilter] = useState('')
+  const [nameFilter, setNameFilter] = useState('')
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
 
@@ -89,7 +89,7 @@ const App = () => {
    * @param {filter input onChange event} event 
   */
  const handleFilterChange = (event) => {
-  setFilter(event.target.value);
+  setNameFilter(event.target.value);
 }
 
 /**
@@ -113,8 +113,8 @@ const handleDeleteClick = (person) => {
     <div>
       <h2>Phonebook</h2>
 
-      <Filter 
-        filter={filter}
+      <NameFilter 
+        filter={nameFilter}
         handleFilterChange={handleFilterChange} 
       />
 
@@ -122,11 +122,7 @@ const handleDeleteClick = (person) => {
 
       <PersonForm 
         newName={newName}
-        setNewName={setNewName}
         newNumber={newNumber}
-        setNewNumber={setNewNumber}
-        persons={persons}
-        setPersons={setPersons}
         addPerson={addPerson}
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange}
@@ -136,7 +132,7 @@ const handleDeleteClick = (person) => {
       
       <Persons 
         persons={persons}
-        filter={filter}
+        nameFilter={nameFilter}
         handleDeleteClick={handleDeleteClick} 
       />
     </div>

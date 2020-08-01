@@ -1,10 +1,10 @@
 import React from 'react'
 
-const Persons = ({ persons, filter, handleDeleteClick }) => {
+const Persons = ({ persons, nameFilter, handleDeleteClick }) => {
   return (
     <div>
       {persons.filter(person =>
-        person.name.toLowerCase().includes(filter.toLowerCase())
+        person.name.toLowerCase().includes(nameFilter.toLowerCase())
       ).map(person => {
         return (
           <div key={person.name}>
