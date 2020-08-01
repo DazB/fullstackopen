@@ -1,12 +1,21 @@
 import React from 'react'
 
-const Persons = ({ persons, filter }) => {
+const Persons = ({ persons, filter, handleDeleteClick }) => {
   return (
     <div>
       {persons.filter(person =>
         person.name.toLowerCase().includes(filter.toLowerCase())
-      ).map(person =>
-        <div key={person.name}>{person.name} {person.number}</div>
+      ).map(person => {
+        return (
+          <div key={person.name}>
+            {person.name} {person.number}
+            <button 
+              onClick={() => handleDeleteClick(person)}>
+                delete
+            </button>
+          </div>
+        )
+      }
       )}
     </div>
   )

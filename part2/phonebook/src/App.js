@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import axios from 'axios'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,10 +11,10 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then(response => {
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(persons => {
+        setPersons(persons)
       })
   }, [])
   
@@ -43,11 +43,10 @@ const App = () => {
         number: newNumber,
       }
 
-      axios
-        .post('http://localhost:3001/persons', nameObject)
-        .then(response => {
-          console.log(response)
-          setPersons(persons.concat(response.data));
+      personService
+        .create(nameObject)
+        .then(person => {
+          setPersons(persons.concat(person));
           setNewName('');
           setNewNumber('');
         })
@@ -78,24 +77,53 @@ const App = () => {
   setFilter(event.target.value);
 }
 
+/**
+ * Handles delete person click
+ * @param {person} person 
+ */
+const handleDeleteClick = (person) => {
+  if (window.confirm(`Delete ${person.name}?`)) {
+    personService
+    .deletePerson(person.id)
+    .catch(error => {
+      alert(
+        `the person '${person.name} was already deleted from server`
+      )
+    })
+    setPersons(persons.filter(p => p.id !== person.id))
+  }
+}
+
   return (
     <div>
       <h2>Phonebook</h2>
 
-      <Filter filter={filter} handleFilterChange={handleFilterChange} />
+      <Filter 
+        filter={filter}
+        handleFilterChange={handleFilterChange} 
+      />
 
       <h2>Add a new</h2>
 
-      <PersonForm newName={newName} setNewName={setNewName}
-        newNumber={newNumber} setNewNumber={setNewNumber}
-        persons={persons} setPersons={setPersons}
-        addPerson={addPerson} handleNameChange={handleNameChange}
+      <PersonForm 
+        newName={newName}
+        setNewName={setNewName}
+        newNumber={newNumber}
+        setNewNumber={setNewNumber}
+        persons={persons}
+        setPersons={setPersons}
+        addPerson={addPerson}
+        handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange}
       />
 
       <h2>Numbers</h2>
       
-      <Persons persons={persons} filter={filter} />
+      <Persons 
+        persons={persons}
+        filter={filter}
+        handleDeleteClick={handleDeleteClick} 
+      />
     </div>
   )
 }
