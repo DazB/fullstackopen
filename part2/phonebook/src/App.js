@@ -27,22 +27,37 @@ const App = () => {
 
     if (newName === '') {
       window.alert(`Please type a name to add`);
+      return;
     }
 
     else if (newNumber === '') {
       window.alert(`Please type a number to add`);
+      return;
     }
 
-    else if (persons.some(person => person.name === newName)) {
-      window.alert(`${newName} is already added to phonebook`);
+    const nameObject = {
+      name: newName,
+      number: newNumber,
+    }
+
+    const existingPerson = persons.find(person => person.name === newName)
+
+    if (existingPerson) {
+      if (window.confirm(`${existingPerson.name} is already added to ` +
+        `the phonebook, replace the old number with a new one?`)) {
+        personService
+          .update(existingPerson.id, nameObject)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => 
+              person.id !== returnedPerson.id ? person : returnedPerson
+            ))
+            setNewName('');
+            setNewNumber('');
+          })
+      }
     }
 
     else {
-      const nameObject = {
-        name: newName,
-        number: newNumber,
-      }
-
       personService
         .create(nameObject)
         .then(person => {
