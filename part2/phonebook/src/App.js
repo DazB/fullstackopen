@@ -3,12 +3,18 @@ import NameFilter from './components/NameFilter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-  const [nameFilter, setNameFilter] = useState('')
+  const [nameFilter, setNameFilter] = useState('');
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
+  const [message, setMessage] = useState({
+    text: null,
+    error: false,
+    timeout: null,
+  });
 
   useEffect(() => {
     personService
@@ -24,7 +30,7 @@ const App = () => {
    */
   const addPerson = (event) => {
     event.preventDefault();
-
+    
     if (newName === '') {
       window.alert(`Please type a name to add`);
       return;
@@ -54,6 +60,32 @@ const App = () => {
             setNewName('');
             setNewNumber('');
           })
+          .catch(error => {
+            clearTimeout(message.timeout);
+            setMessage({
+              text: `Information of ${existingPerson.name} has already been removed from server`,
+              error: true,
+              timeout: setTimeout(() => {
+                setMessage({
+                  text: null,
+                  error: false
+                })          
+              }, 5000)
+            })
+            setPersons(persons.filter(p => p.id !== existingPerson.id))
+          })
+        
+        clearTimeout(message.timeout);
+        setMessage({
+          text: `Changed ${nameObject.name}`,
+          error: false,
+          timeout: setTimeout(() => {
+            setMessage({
+              text: null,
+              error: false
+            })          
+          }, 5000)
+        })
       }
     }
 
@@ -65,6 +97,18 @@ const App = () => {
           setNewName('');
           setNewNumber('');
         })
+      
+      clearTimeout(message.timeout);
+      setMessage({
+        text: `Added ${nameObject.name}`,
+        error: false,
+        timeout: setTimeout(() => {
+          setMessage({
+            text: null,
+            error: false
+          })          
+        }, 5000)
+      })
     }
   }
 
@@ -101,9 +145,17 @@ const handleDeleteClick = (person) => {
     personService
     .deletePerson(person.id)
     .catch(error => {
-      alert(
-        `the person '${person.name} was already deleted from server`
-      )
+      clearTimeout(message.timeout);
+      setMessage({
+        text: `Information of ${person.name} has already been removed from server`,
+        error: true,
+        timeout: setTimeout(() => {
+          setMessage({
+            text: null,
+            error: false
+          })          
+        }, 5000)
+      })
     })
     setPersons(persons.filter(p => p.id !== person.id))
   }
@@ -112,7 +164,7 @@ const handleDeleteClick = (person) => {
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification message={message.text} error={message.error}/>
       <NameFilter 
         filter={nameFilter}
         handleFilterChange={handleFilterChange} 
