@@ -59,11 +59,23 @@ const App = () => {
             ))
             setNewName('');
             setNewNumber('');
+            
+            clearTimeout(message.timeout);
+            setMessage({
+              text: `Changed ${nameObject.name}`,
+              error: false,
+              timeout: setTimeout(() => {
+                setMessage({
+                  text: null,
+                  error: false
+                })          
+              }, 5000)
+            })
           })
           .catch(error => {
             clearTimeout(message.timeout);
             setMessage({
-              text: `Information of ${existingPerson.name} has already been removed from server`,
+              text: error.response.data.error,
               error: true,
               timeout: setTimeout(() => {
                 setMessage({
@@ -72,20 +84,7 @@ const App = () => {
                 })          
               }, 5000)
             })
-            setPersons(persons.filter(p => p.id !== existingPerson.id))
           })
-        
-        clearTimeout(message.timeout);
-        setMessage({
-          text: `Changed ${nameObject.name}`,
-          error: false,
-          timeout: setTimeout(() => {
-            setMessage({
-              text: null,
-              error: false
-            })          
-          }, 5000)
-        })
       }
     }
 
@@ -96,19 +95,34 @@ const App = () => {
           setPersons(persons.concat(person));
           setNewName('');
           setNewNumber('');
-        })
-      
-      clearTimeout(message.timeout);
-      setMessage({
-        text: `Added ${nameObject.name}`,
-        error: false,
-        timeout: setTimeout(() => {
+          
+          clearTimeout(message.timeout);
           setMessage({
-            text: null,
-            error: false
-          })          
-        }, 5000)
-      })
+            text: `Added ${nameObject.name}`,
+            error: false,
+            timeout: setTimeout(() => {
+              setMessage({
+                text: null,
+                error: false
+              })          
+            }, 5000)
+          })
+        })
+        .catch(error => {
+          // console.log(error.response.data.error)
+          clearTimeout(message.timeout);
+          setMessage({
+            text: error.response.data.error,
+            error: true,
+            timeout: setTimeout(() => {
+              setMessage({
+                text: null,
+                error: false
+              })          
+            }, 5000)
+          })
+        })
+
     }
   }
 
