@@ -15,11 +15,18 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    noteService
-      .getAll()
-      .then(initialNotes => {
-        setNotes(initialNotes)
-      })
+    noteService.getAll().then((initialNotes) => {
+      setNotes(initialNotes)
+    })
+  }, [])
+
+  useEffect(() => {
+    const loggedUserJson = window.localStorage.getItem('loggedNoteappUser')
+    if (loggedUserJson) {
+      const user = JSON.parse(loggedUserJson)
+      setUser(user)
+      noteService.setToken(user.token)
+    }
   }, [])
 
   const addNote = (event) => {
@@ -31,24 +38,22 @@ const App = () => {
       id: notes.length + 1,
     }
 
-    noteService
-      .create(noteObject)
-      .then(returnedNote => {
-        setNotes(notes.concat(returnedNote))
-        setNewNote('')
-      })
+    noteService.create(noteObject).then((returnedNote) => {
+      setNotes(notes.concat(returnedNote))
+      setNewNote('')
+    })
   }
 
   const toggleImportanceOf = (id) => {
-    const note = notes.find(n => n.id === id)
+    const note = notes.find((n) => n.id === id)
     const changedNote = { ...note, important: !note.important }
 
     noteService
       .update(id, changedNote)
-      .then(returnedNote => {
-        setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+      .then((returnedNote) => {
+        setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)))
       })
-      .catch(error => {
+      .catch((error) => {
         setErrorMessage(
           `Note '${note.content}' was already removed from server`
         )
@@ -63,9 +68,13 @@ const App = () => {
 
     try {
       const user = await loginService.login({
-        username, password,
+        username,
+        password,
       })
 
+      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
+
+      noteService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -75,22 +84,19 @@ const App = () => {
         setErrorMessage(null)
       }, 5000)
     }
-
   }
 
   const handleNoteChange = (event) => {
     setNewNote(event.target.value)
   }
 
-  const notesToShow = showAll
-    ? notes
-    : notes.filter(note => note.important)
+  const notesToShow = showAll ? notes : notes.filter((note) => note.important)
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
         username
-            <input
+        <input
           type="text"
           value={username}
           name="Username"
@@ -99,7 +105,7 @@ const App = () => {
       </div>
       <div>
         password
-            <input
+        <input
           type="password"
           value={password}
           name="Password"
@@ -112,10 +118,7 @@ const App = () => {
 
   const noteForm = () => (
     <form onSubmit={addNote}>
-      <input
-        value={newNote}
-        onChange={handleNoteChange}
-      />
+      <input value={newNote} onChange={handleNoteChange} />
       <button type="submit">save</button>
     </form>
   )
@@ -125,13 +128,14 @@ const App = () => {
       <h1>Notes</h1>
       <Notification message={errorMessage} />
 
-      {user === null ?
-        loginForm() :
+      {user === null ? (
+        loginForm()
+      ) : (
         <div>
           <p>{user.name} logged-in</p>
           {noteForm()}
         </div>
-      }
+      )}
 
       <div>
         <button onClick={() => setShowAll(!showAll)}>
@@ -139,13 +143,13 @@ const App = () => {
         </button>
       </div>
       <ul>
-        {notesToShow.map((note, i) =>
+        {notesToShow.map((note, i) => (
           <Note
             key={i}
             note={note}
             toggleImportance={() => toggleImportanceOf(note.id)}
           />
-        )}
+        ))}
       </ul>
 
       <Footer />
@@ -153,4 +157,4 @@ const App = () => {
   )
 }
 
-export default App 
+export default App
