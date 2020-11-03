@@ -38,6 +38,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.5",
     "@testing-library/react": "^11.1.0",
-    "deep-freeze": "0.0.1"
+    "deep-freeze": "0.0.1",
+    "redux-devtools-extension": "^2.13.8"
   }
 }
