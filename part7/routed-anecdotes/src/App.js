@@ -29,6 +29,9 @@ const Menu = () => {
   )
 }
 
+const Notification = ({ notification }) =>
+  notification ? <div>{notification}</div> : null
+
 const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
@@ -90,6 +93,8 @@ const CreateNew = (props) => {
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
 
+  const history = useHistory()
+
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
@@ -98,6 +103,7 @@ const CreateNew = (props) => {
       info,
       votes: 0,
     })
+    history.push('/')
   }
 
   return (
@@ -154,9 +160,16 @@ const App = () => {
 
   const [notification, setNotification] = useState('')
 
+  let timeoutID = 0
+
   const addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0)
     setAnecdotes(anecdotes.concat(anecdote))
+    setNotification(`a new anecdote ${anecdote.content} created!`)
+    clearTimeout(timeoutID)
+    timeoutID = setTimeout(() => {
+      setNotification(null)
+    }, 10000)
   }
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id)
@@ -181,6 +194,7 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      <Notification notification={notification} />
       <Switch>
         <Route path="/anecdotes/:id">
           <Anecdote anecdote={anecdote} />
@@ -189,7 +203,7 @@ const App = () => {
           <About />
         </Route>
         <Route path="/create">
-          <CreateNew addNew={addNew} />
+          <CreateNew addNew={addNew} setNotification={setNotification} />
         </Route>
         <Route path="/">
           <AnecdoteList anecdotes={anecdotes} />
