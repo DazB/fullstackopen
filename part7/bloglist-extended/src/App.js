@@ -6,11 +6,15 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import BlogFrom from './components/BlogForm'
+import { useDispatch, useSelector } from 'react-redux'
+import { initBlogs } from './reducers/blogsReducer'
 
 const storageKey = 'loggedBlogappUser'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  // const [blogs, setBlogs] = useState([])
+  const dispatch = useDispatch()
+  const blogs = useSelector((state) => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -29,12 +33,8 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-      const fetchedBlogs = await blogService.getAll()
-      setBlogs(fetchedBlogs)
-    }
-    fetchBlogs()
-  }, [])
+    dispatch(initBlogs())
+  }, [dispatch])
 
   const notifyWith = (message, type = 'success') => {
     clearTimeout(notification.timeout)
@@ -74,7 +74,7 @@ const App = () => {
   const createBlog = async (blogObject) => {
     try {
       const newBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(newBlog))
+      // setBlogs(blogs.concat(newBlog))
       blogFormRef.current.toggleVisibility()
       notifyWith(
         `a new blog ${newBlog.title} by ${newBlog.author} added`,
@@ -93,11 +93,11 @@ const App = () => {
         user: blogObject.user.id,
       }
       const updatedBlog = await blogService.update(likedBlog.id, likedBlog)
-      setBlogs(
-        blogs.map((blog) =>
-          blog.id !== updatedBlog.id ? blog : { ...blog, likes: blog.likes + 1 }
-        )
-      )
+      // setBlogs(
+      //   blogs.map((blog) =>
+      //     blog.id !== updatedBlog.id ? blog : { ...blog, likes: blog.likes + 1 }
+      //   )
+      // )
     } catch (exception) {
       notifyWith('error liking blog', 'error')
     }
@@ -107,7 +107,7 @@ const App = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       try {
         await blogService.deleteBlog(blog.id)
-        setBlogs(blogs.filter((b) => b.id !== blog.id))
+        // setBlogs(blogs.filter((b) => b.id !== blog.id))
         notifyWith('blog removed', 'success')
       } catch (exception) {
         if (exception.response.status === 401) {
