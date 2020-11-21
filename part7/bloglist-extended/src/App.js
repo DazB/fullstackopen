@@ -7,7 +7,12 @@ import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import BlogFrom from './components/BlogForm'
 import { useDispatch, useSelector } from 'react-redux'
-import { initBlogs, addBlog, likeBlog } from './reducers/blogsReducer'
+import {
+  initBlogs,
+  addBlog,
+  likeBlog,
+  removeBlog,
+} from './reducers/blogsReducer'
 
 const storageKey = 'loggedBlogappUser'
 
@@ -99,8 +104,7 @@ const App = () => {
   const handleRemove = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       try {
-        await blogService.deleteBlog(blog.id)
-        // setBlogs(blogs.filter((b) => b.id !== blog.id))
+        await dispatch(removeBlog(blog))
         notifyWith('blog removed', 'success')
       } catch (exception) {
         if (exception.response.status === 401) {
