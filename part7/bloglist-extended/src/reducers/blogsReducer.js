@@ -1,4 +1,3 @@
-import blogs from '../services/blogs'
 import blogsService from '../services/blogs'
 
 // Main Blogs Reducer
@@ -10,6 +9,12 @@ const blogReducer = (state = [], action) => {
     case 'NEW_BLOG': {
       return [...state, action.data]
     }
+    case 'LIKE': {
+      return state.map((blog) =>
+        blog.id !== action.data.id ? blog : action.data
+      )
+    }
+
     default:
       return state
   }
@@ -36,19 +41,19 @@ export const addBlog = (blog) => {
   }
 }
 
-// export const upvoteAnecdote = (anecdote) => {
-//   return async (dispatch) => {
-//     const upvotedAnecdote = {
-//       ...anecdote,
-//       votes: anecdote.votes + 1,
-//     }
-//     const updatedAnecdote = await anecdotesService.update(upvotedAnecdote)
+export const likeBlog = (blog) => {
+  return async (dispatch) => {
+    const likedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+    }
+    const updatedBlog = await blogsService.update(likedBlog)
 
-//     dispatch({
-//       type: 'UPVOTE',
-//       data: updatedAnecdote,
-//     })
-//   }
-// }
+    dispatch({
+      type: 'LIKE',
+      data: updatedBlog,
+    })
+  }
+}
 
 export default blogReducer

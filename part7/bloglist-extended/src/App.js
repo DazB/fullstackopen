@@ -7,13 +7,14 @@ import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import BlogFrom from './components/BlogForm'
 import { useDispatch, useSelector } from 'react-redux'
-import { initBlogs, addBlog } from './reducers/blogsReducer'
+import { initBlogs, addBlog, likeBlog } from './reducers/blogsReducer'
 
 const storageKey = 'loggedBlogappUser'
 
 const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -87,15 +88,9 @@ const App = () => {
     try {
       const likedBlog = {
         ...blogObject,
-        likes: blogObject.likes + 1,
         user: blogObject.user.id,
       }
-      const updatedBlog = await blogService.update(likedBlog.id, likedBlog)
-      // setBlogs(
-      //   blogs.map((blog) =>
-      //     blog.id !== updatedBlog.id ? blog : { ...blog, likes: blog.likes + 1 }
-      //   )
-      // )
+      dispatch(likeBlog(likedBlog))
     } catch (exception) {
       notifyWith('error liking blog', 'error')
     }

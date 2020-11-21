@@ -30,8 +30,8 @@ const deleteBlog = async (id) => {
   return response.data
 }
 
-const update = async (id, blog) => {
-  const response = await axios.put(`${baseUrl}/${id}`, blog)
+const update = async (object) => {
+  const response = await axios.put(`${baseUrl}/${object.id}`, object)
   return response.data
 }
 
