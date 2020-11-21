@@ -14,20 +14,18 @@ import {
   removeBlog,
 } from './reducers/blogsReducer'
 
+import { setNotification } from './reducers/notificationReducer'
+
 const storageKey = 'loggedBlogappUser'
 
 const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
+  const notification = useSelector((state) => state.notification)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({
-    text: null,
-    type: '',
-    timeout: null,
-  })
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem(storageKey)
@@ -41,18 +39,8 @@ const App = () => {
     dispatch(initBlogs())
   }, [dispatch])
 
-  const notifyWith = (message, type = 'success') => {
-    clearTimeout(notification.timeout)
-    setNotification({
-      message,
-      type,
-      timeout: setTimeout(() => {
-        setNotification({
-          text: null,
-          type: '',
-        })
-      }, 5000),
-    })
+  const notifyWith = (message, style = 'success', timeout) => {
+    dispatch(setNotification(message, style, timeout))
   }
 
   const handleLogin = async (event) => {
