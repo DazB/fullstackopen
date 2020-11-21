@@ -7,12 +7,11 @@ import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import BlogFrom from './components/BlogForm'
 import { useDispatch, useSelector } from 'react-redux'
-import { initBlogs } from './reducers/blogsReducer'
+import { initBlogs, addBlog } from './reducers/blogsReducer'
 
 const storageKey = 'loggedBlogappUser'
 
 const App = () => {
-  // const [blogs, setBlogs] = useState([])
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
   const [username, setUsername] = useState('')
@@ -73,11 +72,10 @@ const App = () => {
 
   const createBlog = async (blogObject) => {
     try {
-      const newBlog = await blogService.create(blogObject)
-      // setBlogs(blogs.concat(newBlog))
+      dispatch(addBlog(blogObject))
       blogFormRef.current.toggleVisibility()
       notifyWith(
-        `a new blog ${newBlog.title} by ${newBlog.author} added`,
+        `a new blog ${blogObject.title} by ${blogObject.author} added`,
         'success'
       )
     } catch (exception) {
