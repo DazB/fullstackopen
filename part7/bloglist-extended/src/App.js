@@ -77,13 +77,15 @@ const App = () => {
     }
   }
 
-  const handleLike = async (blogObject) => {
+  const handleLike = async (blog) => {
     try {
-      const likedBlog = {
-        ...blogObject,
-        user: blogObject.user.id,
-      }
-      dispatch(likeBlog(likedBlog))
+      // const blogToLike = blogs.find((b) => b.id === id)
+      // const likedBlog = {
+      //   ...blogToLike,
+      //   likes: blogToLike.likes + 1,
+      //   user: blogToLike.user.id,
+      // }
+      dispatch(likeBlog(blog))
     } catch (exception) {
       notifyWith('error liking blog', 'error')
     }
