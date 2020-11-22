@@ -13,8 +13,8 @@ import {
   likeBlog,
   removeBlog,
 } from './reducers/blogsReducer'
-
 import { setNotification } from './reducers/notificationReducer'
+import { setUser } from './reducers/userReducer'
 
 const storageKey = 'loggedBlogappUser'
 
@@ -22,18 +22,17 @@ const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
   const notification = useSelector((state) => state.notification)
-
+  const user = useSelector((state) => state.user)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem(storageKey)
     if (loggedUserJSON) {
-      setUser(JSON.parse(loggedUserJSON))
+      dispatch(setUser(JSON.parse(loggedUserJSON)))
       blogService.setToken(JSON.parse(loggedUserJSON).token)
     }
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     dispatch(initBlogs())
@@ -53,7 +52,7 @@ const App = () => {
 
       window.localStorage.setItem(storageKey, JSON.stringify(user))
       blogService.setToken(user.token)
-      setUser(user)
+      dispatch(setUser(user))
       setUsername('')
       setPassword('')
       notifyWith('login success', 'success')
@@ -79,12 +78,6 @@ const App = () => {
 
   const handleLike = async (blog) => {
     try {
-      // const blogToLike = blogs.find((b) => b.id === id)
-      // const likedBlog = {
-      //   ...blogToLike,
-      //   likes: blogToLike.likes + 1,
-      //   user: blogToLike.user.id,
-      // }
       dispatch(likeBlog(blog))
     } catch (exception) {
       notifyWith('error liking blog', 'error')
@@ -125,7 +118,7 @@ const App = () => {
         {user.name} logged in
         <button
           onClick={() => {
-            setUser(null)
+            dispatch(setUser(null))
             window.localStorage.removeItem(storageKey)
           }}
         >
