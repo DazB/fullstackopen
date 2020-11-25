@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route, useRouteMatch } from 'react-router-dom'
 
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import BlogFrom from './components/BlogForm'
-import Users from './components/Users'
+import UsersInfo from './components/UsersInfo'
+import UserInfo from './components/UserInfo'
 
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -19,6 +20,7 @@ import {
 } from './reducers/blogsReducer'
 import { setNotification } from './reducers/notificationReducer'
 import { setUser } from './reducers/userReducer'
+import { initUsers } from './reducers/usersReducer'
 
 const storageKey = 'loggedBlogappUser'
 
@@ -26,7 +28,8 @@ const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
   const notification = useSelector((state) => state.notification)
-  const user = useSelector((state) => state.user)
+  const currentUser = useSelector((state) => state.user)
+  const users = useSelector((state) => state.users)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -40,6 +43,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(initBlogs())
+    dispatch(initUsers())
   }, [dispatch])
 
   const notifyWith = (message, style = 'success', timeout) => {
@@ -103,6 +107,11 @@ const App = () => {
     }
   }
 
+  const userMatch = useRouteMatch('/users/:id')
+  const matchedUser = userMatch
+    ? users.find((user) => user.id === userMatch.params.id)
+    : null
+
   const loginForm = () => (
     <LoginForm
       username={username}
@@ -119,7 +128,7 @@ const App = () => {
       <h2>blogs</h2>
       <Notification notification={notification} />
       <p>
-        {user.name} logged in
+        {currentUser.name} logged in
         <button
           onClick={() => {
             dispatch(setUser(null))
@@ -130,8 +139,11 @@ const App = () => {
         </button>
       </p>
       <Switch>
+        <Route path="/users/:id">
+          <UserInfo user={matchedUser} />
+        </Route>
         <Route path="/users">
-          <Users blogs={blogs} />
+          <UsersInfo blogs={blogs} />
         </Route>
         <Route path="/">
           <Togglable buttonLabel="new blog" ref={blogFormRef}>
@@ -147,7 +159,7 @@ const App = () => {
                 <Blog
                   key={blog.id}
                   blog={blog}
-                  user={user}
+                  user={currentUser}
                   handleLike={handleLike}
                   handleRemove={handleRemove}
                 />
@@ -158,7 +170,7 @@ const App = () => {
     </div>
   )
 
-  return <div>{user === null ? loginForm() : blogList()}</div>
+  return <div>{currentUser === null ? loginForm() : blogList()}</div>
 }
 
 export default App

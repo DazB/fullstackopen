@@ -1,13 +1,14 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const UsersInfo = ({ blogs }) => {
   let usersBlogs = {}
 
   blogs.forEach((blog) => {
-    if (usersBlogs[blog.user.username]) {
-      usersBlogs[blog.user.username]++
+    if (usersBlogs[blog.user.id]) {
+      usersBlogs[blog.user.id].number++
     } else {
-      usersBlogs[blog.user.username] = 1
+      usersBlogs[blog.user.id] = { number: 1, username: blog.user.username }
     }
   })
 
@@ -25,8 +26,10 @@ const UsersInfo = ({ blogs }) => {
           </tr>
           {Object.entries(usersBlogs).map((user) => (
             <tr key={user[0]}>
-              <td>{user[0]}</td>
-              <td>{user[1]}</td>
+              <td>
+                <Link to={`/users/${user[0]}`}>{user[1].username}</Link>
+              </td>
+              <td>{user[1].number}</td>
             </tr>
           ))}
         </tbody>
