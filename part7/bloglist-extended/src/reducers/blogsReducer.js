@@ -36,13 +36,18 @@ export const initBlogs = () => {
   }
 }
 
-export const addBlog = (blog) => {
+export const addBlog = (blog, notifyWith) => {
   return async (dispatch) => {
-    const newBlog = await blogsService.create(blog)
-    dispatch({
-      type: 'NEW_BLOG',
-      data: newBlog,
-    })
+    try {
+      const newBlog = await blogsService.create(blog)
+      dispatch({
+        type: 'NEW_BLOG',
+        data: newBlog,
+      })
+      notifyWith(`a new blog ${blog.title} by ${blog.author} added`, 'success')
+    } catch (error) {
+      notifyWith('error adding blog', 'error')
+    }
   }
 }
 

@@ -2,7 +2,13 @@ import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import { Switch, Route, useRouteMatch } from 'react-router-dom'
+import {
+  Switch,
+  Route,
+  useRouteMatch,
+  Link,
+  useHistory,
+} from 'react-router-dom'
 
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
@@ -32,6 +38,7 @@ const App = () => {
   const users = useSelector((state) => state.users)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const history = useHistory()
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem(storageKey)
@@ -72,16 +79,8 @@ const App = () => {
   const blogFormRef = useRef()
 
   const createBlog = async (blogObject) => {
-    try {
-      dispatch(addBlog(blogObject))
-      blogFormRef.current.toggleVisibility()
-      notifyWith(
-        `a new blog ${blogObject.title} by ${blogObject.author} added`,
-        'success'
-      )
-    } catch (exception) {
-      notifyWith('error adding blog', 'error')
-    }
+    dispatch(addBlog(blogObject, notifyWith))
+    blogFormRef.current.toggleVisibility()
   }
 
   const handleLike = async (blog) => {
@@ -95,6 +94,7 @@ const App = () => {
   const handleRemove = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       try {
+        history.push('/')
         await dispatch(removeBlog(blog))
         notifyWith('blog removed', 'success')
       } catch (exception) {
@@ -112,6 +112,11 @@ const App = () => {
     ? users.find((user) => user.id === userMatch.params.id)
     : null
 
+  const blogMatch = useRouteMatch('/blogs/:id')
+  const matchedBlog = blogMatch
+    ? blogs.find((blog) => blog.id === blogMatch.params.id)
+    : {}
+
   const loginForm = () => (
     <LoginForm
       username={username}
@@ -127,23 +132,29 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification notification={notification} />
-      <p>
-        {currentUser.name} logged in
-        <button
-          onClick={() => {
-            dispatch(setUser(null))
-            window.localStorage.removeItem(storageKey)
-          }}
-        >
-          logout
-        </button>
-      </p>
+      <p>{currentUser.name} logged in</p>
+      <button
+        onClick={() => {
+          dispatch(setUser(null))
+          window.localStorage.removeItem(storageKey)
+        }}
+      >
+        logout
+      </button>
       <Switch>
         <Route path="/users/:id">
           <UserInfo user={matchedUser} />
         </Route>
         <Route path="/users">
           <UsersInfo blogs={blogs} />
+        </Route>
+        <Route path="/blogs/:id">
+          <Blog
+            blog={matchedBlog}
+            handleLike={handleLike}
+            handleRemove={handleRemove}
+            user={currentUser}
+          />
         </Route>
         <Route path="/">
           <Togglable buttonLabel="new blog" ref={blogFormRef}>
@@ -156,13 +167,9 @@ const App = () => {
                 return blog2.likes - blog1.likes
               })
               .map((blog) => (
-                <Blog
-                  key={blog.id}
-                  blog={blog}
-                  user={currentUser}
-                  handleLike={handleLike}
-                  handleRemove={handleRemove}
-                />
+                <div key={blog.id} style={blogStyle}>
+                  <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                </div>
               ))}
           </div>
         </Route>
@@ -171,6 +178,14 @@ const App = () => {
   )
 
   return <div>{currentUser === null ? loginForm() : blogList()}</div>
+}
+
+const blogStyle = {
+  paddingTop: 10,
+  paddingLeft: 2,
+  border: 'solid',
+  borderWidth: 1,
+  marginBottom: 5,
 }
 
 export default App
