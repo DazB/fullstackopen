@@ -130,17 +130,26 @@ const App = () => {
 
   const blogList = () => (
     <div>
+      <div style={navBarStyle}>
+        <Link style={navLinkStyle} to="/">
+          blogs
+        </Link>
+        <Link style={navLinkStyle} to="/users">
+          notes
+        </Link>
+        <span style={navLinkStyle}>{currentUser.name} logged in</span>
+        <button
+          onClick={() => {
+            dispatch(setUser(null))
+            window.localStorage.removeItem(storageKey)
+          }}
+        >
+          logout
+        </button>
+      </div>
       <h2>blogs</h2>
       <Notification notification={notification} />
-      <p>{currentUser.name} logged in</p>
-      <button
-        onClick={() => {
-          dispatch(setUser(null))
-          window.localStorage.removeItem(storageKey)
-        }}
-      >
-        logout
-      </button>
+
       <Switch>
         <Route path="/users/:id">
           <UserInfo user={matchedUser} />
@@ -178,6 +187,16 @@ const App = () => {
   )
 
   return <div>{currentUser === null ? loginForm() : blogList()}</div>
+}
+
+const navBarStyle = {
+  padding: 5,
+  marginBottom: 5,
+  backgroundColor: 'lightgrey',
+}
+
+const navLinkStyle = {
+  paddingRight: 10,
 }
 
 const blogStyle = {
